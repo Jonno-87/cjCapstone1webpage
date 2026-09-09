@@ -448,7 +448,10 @@
 
         cognigyWidget =
           await window.initWebRTCWidget(
-            COGNIGY_ENDPOINT_CONFIG_URL
+            COGNIGY_ENDPOINT_CONFIG_URL,
+            {
+              userId: "1234567890"
+            }
           );
 
 
