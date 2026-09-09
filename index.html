@@ -4,31 +4,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Qwik Service Voice Assistant</title>
+
   <style>
     :root {
       --bg: #f4f7fb;
       --card: #ffffff;
       --text: #172033;
       --muted: #667085;
-      --border: #d0d5dd;
       --accent: #155eef;
-      --accent-dark: #004eeb;
       --success: #067647;
       --danger: #b42318;
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
       background: var(--bg);
       color: var(--text);
     }
+
     .page {
       min-height: 100vh;
       display: grid;
       place-items: center;
       padding: 24px;
     }
+
     .card {
       width: min(100%, 560px);
       background: var(--card);
@@ -37,6 +42,7 @@
       padding: 32px;
       box-shadow: 0 12px 34px rgba(16, 24, 40, 0.08);
     }
+
     .eyebrow {
       font-size: 13px;
       font-weight: 700;
@@ -45,59 +51,34 @@
       color: var(--accent);
       margin-bottom: 10px;
     }
+
     h1 {
       margin: 0 0 10px;
       font-size: 30px;
       line-height: 1.15;
     }
+
     .intro {
       margin: 0 0 26px;
       color: var(--muted);
       line-height: 1.5;
     }
-    label {
-      display: block;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    input {
-      width: 100%;
-      padding: 14px 15px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 17px;
-      outline: none;
-    }
-    input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(21, 94, 239, 0.12);
-    }
-    .hint {
-      margin: 8px 0 20px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.4;
-    }
-    button {
-      width: 100%;
-      border: 0;
-      border-radius: 10px;
-      padding: 14px 18px;
-      font-size: 17px;
-      font-weight: 700;
-      cursor: pointer;
-      background: var(--accent);
-      color: white;
-    }
-    button:hover { background: var(--accent-dark); }
+
     .status {
       margin-top: 16px;
       min-height: 22px;
       font-size: 14px;
     }
-    .status.success { color: var(--success); }
-    .status.error { color: var(--danger); }
-    .privacy {
+
+    .status.success {
+      color: var(--success);
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    .information {
       margin-top: 22px;
       padding-top: 18px;
       border-top: 1px solid #eaecf0;
@@ -107,155 +88,155 @@
     }
   </style>
 </head>
+
 <body>
+
   <main class="page">
     <section class="card">
+
       <div class="eyebrow">Qwik Service</div>
+
       <h1>Call our AI service assistant</h1>
+
       <p class="intro">
-        Enter the telephone number linked to your service account, then start your call.
-        We will use it as part of the identity verification process.
+        Start a voice call with our AI service assistant to book, manage,
+        or check your vehicle service appointment.
       </p>
 
-      <form id="preCallForm">
-        <label for="phoneNumber">Telephone number</label>
-        <input
-          id="phoneNumber"
-          name="phoneNumber"
-          type="tel"
-          inputmode="tel"
-          autocomplete="tel"
-          placeholder="+49 30 1234567"
-          aria-describedby="phoneHint"
-          required
-        />
-        <div id="phoneHint" class="hint">
-          Include the country code, for example +49, +1, or +61.
-        </div>
+      <div id="status" class="status" aria-live="polite"></div>
 
-        <button id="saveNumberButton" type="submit">Continue to call</button>
-        <div id="status" class="status" aria-live="polite"></div>
-      </form>
-
-      <div class="privacy">
-        For this WebRTC demonstration, the number entered here is customer-supplied data
-        used for backend identity verification. It is not network-derived PSTN ANI.
+      <div class="information">
+        During the call, the assistant may ask you for information required
+        to verify your identity and manage your service appointment.
       </div>
+
     </section>
   </main>
 
-  <!-- Replace this placeholder with the exact configuration URL copied from:
-       Cognigy > Deploy > Endpoints > Voice Gateway Endpoint > Click To Call Embedding HTML -->
+
+  <!-- Cognigy Click To Call Endpoint configuration -->
   <script>
     const COGNIGY_ENDPOINT_CONFIG_URL =
       "https://endpoint-trial.cognigy.ai/ae1a1effa1cdc7f21a9eb8c5c5972abacb5e044fcf85b4abf3a4620fcb25911b";
   </script>
 
-  <!-- Official Cognigy Click To Call widget bundle -->
+
+  <!-- Official Cognigy Click To Call widget -->
   <script src="https://github.com/Cognigy/click-to-call-widget/releases/latest/download/webRTCWidget.js"></script>
 
-  <script>
-    let cognigyWidget = null;
-    let pendingPhoneNumber = null;
 
-    const form = document.getElementById("preCallForm");
-    const phoneInput = document.getElementById("phoneNumber");
+  <script>
+
+    let cognigyWidget = null;
+
     const statusEl = document.getElementById("status");
 
+
     function setStatus(message, type = "") {
+
       statusEl.textContent = message;
-      statusEl.className = "status" + (type ? " " + type : "");
+
+      statusEl.className =
+        "status" + (type ? " " + type : "");
+
     }
 
-    function normalizePhoneNumber(value) {
-      return value.trim().replace(/[\s()-]/g, "");
-    }
-
-    function isReasonablePhoneNumber(value) {
-      return /^\+[1-9]\d{6,14}$/.test(value);
-    }
 
     async function initialiseCognigyWidget() {
-      if (
-        !COGNIGY_ENDPOINT_CONFIG_URL ||
-        COGNIGY_ENDPOINT_CONFIG_URL.includes("PASTE_YOUR")
-      ) {
+
+      if (!COGNIGY_ENDPOINT_CONFIG_URL) {
+
         setStatus(
-          "Cognigy Click To Call is not connected yet. Add your Endpoint configuration URL to this page.",
+          "Cognigy Click To Call is not configured.",
           "error"
         );
+
         return;
       }
+
 
       if (typeof window.initWebRTCWidget !== "function") {
-        setStatus("The Cognigy Click To Call widget could not be loaded.", "error");
-        return;
-      }
 
-      try {
-        cognigyWidget = await window.initWebRTCWidget(
-          COGNIGY_ENDPOINT_CONFIG_URL
-        );
-
-        cognigyWidget.on("newRTCSession", function (session) {
-          if (pendingPhoneNumber && typeof session.sendInfo === "function") {
-            session.sendInfo(
-              JSON.stringify({
-                type: "preCallIdentity",
-                phoneNumber: pendingPhoneNumber
-              })
-            );
-
-            setStatus(
-              "Call connected. Telephone number sent to the Cognigy session.",
-              "success"
-            );
-          }
-
-          session.on("ended", function () {
-            setStatus("Call ended.");
-          });
-
-          session.on("terminated", function () {
-            setStatus("Call ended.");
-          });
-        });
-
-        setStatus("Ready. Enter your telephone number, then use the Cognigy call control.", "success");
-      } catch (error) {
-        console.error(error);
-        setStatus("Unable to initialise Cognigy Click To Call.", "error");
-      }
-    }
-
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-
-      const normalized = normalizePhoneNumber(phoneInput.value);
-
-      if (!isReasonablePhoneNumber(normalized)) {
         setStatus(
-          "Enter the number in international format, for example +49301234567.",
+          "The Cognigy Click To Call widget could not be loaded.",
           "error"
         );
-        phoneInput.focus();
+
         return;
       }
 
-      pendingPhoneNumber = normalized;
 
-      /*
-        We intentionally do not call an undocumented widget method to start
-        the call. The official Cognigy widget owns the call-start control.
-        When a new RTC session starts, the saved number is sent using sendInfo().
-      */
-      setStatus(
-        "Telephone number saved. Start the call using the Cognigy Click To Call control.",
-        "success"
-      );
-    });
+      try {
 
-    window.addEventListener("load", initialiseCognigyWidget);
+        cognigyWidget =
+          await window.initWebRTCWidget(
+            COGNIGY_ENDPOINT_CONFIG_URL
+          );
+
+
+        cognigyWidget.on(
+          "newRTCSession",
+          function (session) {
+
+            setStatus(
+              "Call connected.",
+              "success"
+            );
+
+
+            session.on(
+              "ended",
+              function () {
+
+                setStatus(
+                  "Call ended."
+                );
+
+              }
+            );
+
+
+            session.on(
+              "terminated",
+              function () {
+
+                setStatus(
+                  "Call ended."
+                );
+
+              }
+            );
+
+          }
+        );
+
+
+        setStatus(
+          "Ready. Use the Cognigy call button to speak with our service assistant.",
+          "success"
+        );
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        setStatus(
+          "Unable to initialise Cognigy Click To Call.",
+          "error"
+        );
+
+      }
+
+    }
+
+
+    window.addEventListener(
+      "load",
+      initialiseCognigyWidget
+    );
+
   </script>
+
 </body>
 </html>
