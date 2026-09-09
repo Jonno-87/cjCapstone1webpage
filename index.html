@@ -4,16 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0b1f35" />
+  <title>Qwik Service | Vehicle Service Appointments</title>
 
-  <title>Qwik Service Voice Assistant</title>
-
-  <!-- Modern font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -46,25 +41,14 @@
       color: var(--text);
     }
 
-    /* =========================
-       HEADER
-       ========================= */
-
     .topbar {
       width: 100%;
-      background: linear-gradient(
-        90deg,
-        var(--navy),
-        var(--navy-2)
-      );
-
+      background: linear-gradient(90deg, var(--navy), var(--navy-2));
       color: white;
       padding: 18px 28px;
-
       display: flex;
       justify-content: space-between;
       align-items: center;
-
       gap: 24px;
     }
 
@@ -84,193 +68,105 @@
 
     .brand-tagline {
       padding-left: 16px;
-
-      border-left:
-        1px solid rgba(255, 255, 255, 0.28);
-
+      border-left: 1px solid rgba(255,255,255,0.28);
       font-size: 12px;
       line-height: 1.45;
       letter-spacing: 0.10em;
-
       text-transform: uppercase;
-
-      color:
-        rgba(255, 255, 255, 0.78);
+      color: rgba(255,255,255,0.78);
     }
 
     .trust-line {
       font-size: 12px;
       font-weight: 600;
-
       letter-spacing: 0.08em;
-
       text-transform: uppercase;
-
-      color:
-        rgba(255, 255, 255, 0.82);
-
+      color: rgba(255,255,255,0.82);
       white-space: nowrap;
     }
 
-    /* =========================
-       MAIN HERO
-       ========================= */
-
     .hero {
       position: relative;
-
-      min-height:
-        calc(100vh - 80px);
-
-      padding:
-        46px 24px 72px;
-
+      min-height: calc(100vh - 80px);
+      padding: 46px 24px 72px;
       display: grid;
       place-items: center;
-
       background:
-        linear-gradient(
-          rgba(11, 31, 53, 0.28),
-          rgba(11, 31, 53, 0.18)
-        ),
-        url("images/qwik-workshop.jpg")
-        center center / cover no-repeat;
+        linear-gradient(rgba(11,31,53,0.28), rgba(11,31,53,0.18)),
+        url("images/qwik-workshop.jpg") center center / cover no-repeat;
     }
 
-    /* =========================
-       ASSISTANT CARD
-       ========================= */
-
     .assistant-card {
-      width:
-        min(100%, 760px);
-
+      width: min(100%, 760px);
       overflow: hidden;
-
-      background:
-        rgba(255, 255, 255, 0.97);
-
-      border:
-        1px solid rgba(255, 255, 255, 0.65);
-
+      background: rgba(255,255,255,0.97);
+      border: 1px solid rgba(255,255,255,0.65);
       border-radius: 22px;
-
-      box-shadow:
-        0 24px 70px
-        rgba(10, 25, 45, 0.24);
-
-      backdrop-filter:
-        blur(4px);
+      box-shadow: 0 24px 70px rgba(10, 25, 45, 0.24);
+      backdrop-filter: blur(4px);
     }
 
     .card-image {
       height: 250px;
-
       background:
-        linear-gradient(
-          180deg,
-          rgba(11, 31, 53, 0.03),
-          rgba(11, 31, 53, 0.10)
-        ),
-        url("images/qwik-workshop.jpg")
-        center 48% / cover no-repeat;
+        linear-gradient(180deg, rgba(11,31,53,0.03), rgba(11,31,53,0.10)),
+        url("images/qwik-friendly-team.jpg") center 45% / cover no-repeat;
     }
 
     .card-content {
-      padding:
-        32px 38px 26px;
+      padding: 32px 38px 26px;
     }
 
     .eyebrow {
       margin-bottom: 10px;
-
       color: var(--blue);
-
       font-size: 13px;
       font-weight: 800;
-
       letter-spacing: 0.14em;
-
       text-transform: uppercase;
     }
 
     h1 {
-      margin:
-        0 0 12px;
-
-      font-size:
-        clamp(30px, 4vw, 44px);
-
+      margin: 0 0 12px;
+      font-size: clamp(30px, 4vw, 44px);
       line-height: 1.08;
-
-      letter-spacing:
-        -0.035em;
+      letter-spacing: -0.035em;
     }
 
     .intro {
       margin: 0;
-
       max-width: 650px;
-
       color: var(--muted);
-
       font-size: 17px;
-
       line-height: 1.6;
     }
 
-    /* =========================
-       CALL AREA
-       ========================= */
-
     .call-area {
-      margin:
-        26px 0 8px;
-
-      padding:
-        19px 20px;
-
-      border:
-        1px solid #cfe0ff;
-
-      border-radius:
-        15px;
-
-      background:
-        linear-gradient(
-          135deg,
-          #f7faff,
-          var(--sky)
-        );
+      margin: 26px 0 8px;
+      padding: 19px 20px;
+      border: 1px solid #cfe0ff;
+      border-radius: 15px;
+      background: linear-gradient(135deg, #f7faff, var(--sky));
     }
 
     .call-title {
       margin-bottom: 4px;
-
       color: var(--navy);
-
       font-size: 15px;
-
       font-weight: 700;
     }
 
     .call-help {
       margin: 0;
-
       color: var(--muted);
-
       font-size: 13px;
-
       line-height: 1.5;
     }
 
     .status {
       margin-top: 12px;
-
       min-height: 21px;
-
       font-size: 14px;
-
       font-weight: 600;
     }
 
@@ -282,112 +178,63 @@
       color: var(--danger);
     }
 
-    /* =========================
-       BENEFITS
-       ========================= */
-
     .benefits {
       margin-top: 26px;
-
       padding-top: 22px;
-
-      border-top:
-        1px solid var(--line);
-
+      border-top: 1px solid var(--line);
       display: grid;
-
-      grid-template-columns:
-        repeat(3, 1fr);
-
+      grid-template-columns: repeat(3, 1fr);
       gap: 12px;
     }
 
     .benefit {
       display: flex;
-
       align-items: center;
-
       gap: 11px;
-
       min-width: 0;
-
-      padding:
-        11px 10px;
-
+      padding: 11px 10px;
       border-radius: 12px;
     }
 
     .benefit-icon {
       width: 38px;
       height: 38px;
-
-      flex:
-        0 0 38px;
-
+      flex: 0 0 38px;
       display: grid;
-
       place-items: center;
-
       border-radius: 10px;
-
       background: var(--sky);
-
       color: var(--blue);
-
       font-size: 20px;
     }
 
     .benefit-text {
       color: var(--navy);
-
       font-size: 13px;
-
       font-weight: 700;
-
       line-height: 1.35;
     }
 
     .information {
       margin-top: 20px;
-
       color: var(--muted);
-
       font-size: 12px;
-
       line-height: 1.55;
     }
 
-    /* =========================
-       FOOTER
-       ========================= */
-
     .footer {
       background: white;
-
-      border-top:
-        1px solid var(--line);
-
+      border-top: 1px solid var(--line);
       color: var(--muted);
-
       text-align: center;
-
-      padding:
-        17px 24px;
-
+      padding: 17px 24px;
       font-size: 12px;
     }
 
-    /* =========================
-       MOBILE
-       ========================= */
-
     @media (max-width: 760px) {
-
       .topbar {
         align-items: flex-start;
-
-        padding:
-          16px 18px;
+        padding: 16px 18px;
       }
 
       .brand-tagline,
@@ -400,11 +247,8 @@
       }
 
       .hero {
-        padding:
-          28px 14px 58px;
-
-        background-position:
-          56% center;
+        padding: 28px 14px 58px;
+        background-position: 56% center;
       }
 
       .assistant-card {
@@ -416,8 +260,7 @@
       }
 
       .card-content {
-        padding:
-          25px 22px 22px;
+        padding: 25px 22px 22px;
       }
 
       .intro {
@@ -425,24 +268,16 @@
       }
 
       .benefits {
-        grid-template-columns:
-          1fr;
-
+        grid-template-columns: 1fr;
         gap: 4px;
       }
     }
   </style>
 </head>
 
-
 <body>
 
-  <!-- =========================
-       HEADER
-       ========================= -->
-
   <header class="topbar">
-
     <div class="brand">
 
       <div class="brand-name">
@@ -459,13 +294,8 @@
     <div class="trust-line">
       Vehicle servicing • Expertise • Nationwide support
     </div>
-
   </header>
 
-
-  <!-- =========================
-       MAIN PAGE
-       ========================= -->
 
   <main class="hero">
 
@@ -485,20 +315,15 @@
 
 
         <h1>
-          Call our AI service assistant
+          Call our friendly team
         </h1>
 
 
         <p class="intro">
-
-          Start a voice call with our AI service assistant
-          to book, manage, or check your vehicle service
-          appointment.
-
+          Start a voice call with our team to book, manage,
+          or check your vehicle service appointment.
         </p>
 
-
-        <!-- CALL INFORMATION -->
 
         <div class="call-area">
 
@@ -507,12 +332,8 @@
           </div>
 
           <p class="call-help">
-
-            Use the Cognigy call button on this page
-            to start your voice session.
-
+            Call us directly now to start your voice session.
           </p>
-
 
           <div
             id="status"
@@ -523,198 +344,126 @@
         </div>
 
 
-        <!-- BENEFITS -->
-
         <div class="benefits">
 
-
           <div class="benefit">
-
-            <div class="benefit-icon">
-              ✓
-            </div>
-
+            <div class="benefit-icon">✓</div>
             <div class="benefit-text">
               Manufacturer-approved care
             </div>
-
           </div>
 
 
           <div class="benefit">
-
-            <div class="benefit-icon">
-              ⚙
-            </div>
-
+            <div class="benefit-icon">⚙</div>
             <div class="benefit-text">
               Trained service technicians
             </div>
-
           </div>
 
 
           <div class="benefit">
-
-            <div class="benefit-icon">
-              ⌁
-            </div>
-
+            <div class="benefit-icon">⌁</div>
             <div class="benefit-text">
               Simple appointment management
             </div>
-
           </div>
-
 
         </div>
 
 
         <div class="information">
-
-          During the call, the assistant may ask for
-          information required to verify your identity
-          and manage your service appointment.
-
+          During the call, our team may ask for information required
+          to verify your identity and manage your service appointment.
         </div>
 
       </div>
-
     </section>
 
   </main>
 
 
-  <!-- =========================
-       FOOTER
-       ========================= -->
-
   <footer class="footer">
-
     Qwik Service • Approved care for a smoother journey
-
   </footer>
 
 
-  <!-- ==================================================
-       COGNIGY CLICK TO CALL
-       ================================================== -->
-
-
-  <!-- Cognigy Endpoint configuration -->
-
+  <!-- Call service configuration -->
   <script>
-
     const COGNIGY_ENDPOINT_CONFIG_URL =
-
       "https://endpoint-trial.cognigy.ai/ae1a1effa1cdc7f21a9eb8c5c5972abacb5e044fcf85b4abf3a4620fcb25911b";
-
   </script>
 
 
-  <!-- Official Cognigy Click To Call widget -->
-
-  <script
-    src="https://github.com/Cognigy/click-to-call-widget/releases/latest/download/webRTCWidget.js">
-  </script>
+  <!-- Click To Call widget -->
+  <script src="https://github.com/Cognigy/click-to-call-widget/releases/latest/download/webRTCWidget.js"></script>
 
 
-  <!-- Working Cognigy logic -->
-
+  <!-- Working call logic -->
   <script>
 
     let cognigyWidget = null;
-
 
     const statusEl =
       document.getElementById("status");
 
 
-    function setStatus(
-      message,
-      type = ""
-    ) {
+    function setStatus(message, type = "") {
 
-      statusEl.textContent =
-        message;
-
+      statusEl.textContent = message;
 
       statusEl.className =
-
-        "status" +
-        (type ? " " + type : "");
+        "status" + (type ? " " + type : "");
 
     }
 
 
     async function initialiseCognigyWidget() {
 
-
       if (!COGNIGY_ENDPOINT_CONFIG_URL) {
 
         setStatus(
-
-          "Cognigy Click To Call is not configured.",
-
+          "The call service is not configured.",
           "error"
-
         );
 
         return;
-
       }
 
 
       if (
-        typeof window.initWebRTCWidget !==
-        "function"
+        typeof window.initWebRTCWidget !== "function"
       ) {
 
         setStatus(
-
-          "The Cognigy Click To Call widget could not be loaded.",
-
+          "The call service could not be loaded.",
           "error"
-
         );
 
         return;
-
       }
 
 
       try {
 
-
         cognigyWidget =
-
           await window.initWebRTCWidget(
-
             COGNIGY_ENDPOINT_CONFIG_URL
-
           );
 
 
         cognigyWidget.on(
-
           "newRTCSession",
-
           function (session) {
 
-
             setStatus(
-
               "Call connected.",
-
               "success"
-
             );
 
 
             session.on(
-
               "ended",
-
               function () {
 
                 setStatus(
@@ -722,14 +471,11 @@
                 );
 
               }
-
             );
 
 
             session.on(
-
               "terminated",
-
               function () {
 
                 setStatus(
@@ -737,38 +483,26 @@
                 );
 
               }
-
             );
-
 
           }
-
         );
 
 
         setStatus(
-
-          "Ready. Use the Cognigy call button to speak with our service assistant.",
-
+          "Ready. Call us directly now to speak with our friendly team.",
           "success"
-
         );
 
 
       } catch (error) {
 
-
         console.error(error);
 
-
         setStatus(
-
-          "Unable to initialise Cognigy Click To Call.",
-
+          "Unable to initialise the call service.",
           "error"
-
         );
-
 
       }
 
@@ -776,15 +510,11 @@
 
 
     window.addEventListener(
-
       "load",
-
       initialiseCognigyWidget
-
     );
 
   </script>
-
 
 </body>
 </html>
