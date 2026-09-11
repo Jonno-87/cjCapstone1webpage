@@ -178,6 +178,52 @@
       color: var(--danger);
     }
 
+    .xapp-area {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .xapp-shell {
+      background: #ffffff;
+      border: 1px solid #cfe0ff;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(10,25,45,0.12);
+    }
+
+    .xapp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: #f7faff;
+      border-bottom: 1px solid #e4e7ec;
+    }
+
+    .xapp-title {
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .xapp-close {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .xapp-frame {
+      width: 100%;
+      height: 650px;
+      border: 0;
+      display: block;
+      background: white;
+    }
+
     .benefits {
       margin-top: 26px;
       padding-top: 22px;
@@ -267,6 +313,10 @@
         font-size: 15px;
       }
 
+      .xapp-frame {
+        height: 560px;
+      }
+
       .benefits {
         grid-template-columns: 1fr;
         gap: 4px;
@@ -279,7 +329,6 @@
 
   <header class="topbar">
     <div class="brand">
-
       <div class="brand-name">
         QWIK SERVICE
       </div>
@@ -288,7 +337,6 @@
         Approved care<br>
         for a smoother journey
       </div>
-
     </div>
 
     <div class="trust-line">
@@ -296,9 +344,7 @@
     </div>
   </header>
 
-
   <main class="hero">
-
     <section class="assistant-card">
 
       <div
@@ -306,27 +352,22 @@
         aria-hidden="true">
       </div>
 
-
       <div class="card-content">
 
         <div class="eyebrow">
           Qwik Service
         </div>
 
-
         <h1>
           Call our friendly team
         </h1>
-
 
         <p class="intro">
           Start a voice call with our team to book, manage,
           or check your vehicle service appointment.
         </p>
 
-
         <div class="call-area">
-
           <div class="call-title">
             Ready to speak with Qwik Service?
           </div>
@@ -340,9 +381,42 @@
             class="status"
             aria-live="polite">
           </div>
-
         </div>
 
+        <!-- Hidden until Cognigy sends the xApp URL -->
+        <div
+          id="xapp-area"
+          class="xapp-area"
+          aria-live="polite">
+
+          <div class="xapp-shell">
+
+            <div class="xapp-header">
+
+              <div class="xapp-title">
+                Manage your appointment
+              </div>
+
+              <button
+                id="xapp-close"
+                class="xapp-close"
+                type="button"
+                aria-label="Close appointment panel">
+                ×
+              </button>
+
+            </div>
+
+            <iframe
+              id="xapp-frame"
+              class="xapp-frame"
+              title="Qwik Service Appointment"
+              allow="clipboard-read; clipboard-write">
+            </iframe>
+
+          </div>
+
+        </div>
 
         <div class="benefits">
 
@@ -353,14 +427,12 @@
             </div>
           </div>
 
-
           <div class="benefit">
             <div class="benefit-icon">⚙</div>
             <div class="benefit-text">
               Trained service technicians
             </div>
           </div>
-
 
           <div class="benefit">
             <div class="benefit-icon">⌁</div>
@@ -371,7 +443,6 @@
 
         </div>
 
-
         <div class="information">
           During the call, our team may ask for information required
           to verify your identity and manage your service appointment.
@@ -379,33 +450,36 @@
 
       </div>
     </section>
-
   </main>
-
 
   <footer class="footer">
     Qwik Service • Approved care for a smoother journey
   </footer>
 
-
-  <!-- Call service configuration -->
+  <!-- Cognigy endpoint configuration -->
   <script>
     const COGNIGY_ENDPOINT_CONFIG_URL =
       "https://endpoint-trial.cognigy.ai/ae1a1effa1cdc7f21a9eb8c5c5972abacb5e044fcf85b4abf3a4620fcb25911b";
   </script>
 
-
-  <!-- Click To Call widget -->
+  <!-- Cognigy Click To Call widget -->
   <script src="https://github.com/Cognigy/click-to-call-widget/releases/latest/download/webRTCWidget.js"></script>
 
-
-  <!-- Working call logic -->
   <script>
 
     let cognigyWidget = null;
 
     const statusEl =
       document.getElementById("status");
+
+    const xappArea =
+      document.getElementById("xapp-area");
+
+    const xappFrame =
+      document.getElementById("xapp-frame");
+
+    const xappClose =
+      document.getElementById("xapp-close");
 
 
     function setStatus(message, type = "") {
@@ -418,6 +492,103 @@
     }
 
 
+    function hideXApp() {
+
+      xappFrame.src = "about:blank";
+
+      xappArea.style.display = "none";
+
+    }
+
+
+    function showXApp(url) {
+
+      if (!url) {
+        return;
+      }
+
+      xappFrame.src = url;
+
+      xappArea.style.display = "block";
+
+      xappArea.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+
+    }
+
+
+    function readInfoBody(event) {
+
+      if (!event) {
+        return null;
+      }
+
+      const info =
+        event.info || event;
+
+      let body =
+        info.body !== undefined
+          ? info.body
+          : info.request &&
+            info.request.body !== undefined
+              ? info.request.body
+              : event.body !== undefined
+                ? event.body
+                : null;
+
+      if (!body) {
+        return null;
+      }
+
+      if (typeof body === "string") {
+
+        try {
+
+          return JSON.parse(body);
+
+        } catch (error) {
+
+          console.warn(
+            "Cognigy INFO body was not JSON:",
+            body
+          );
+
+          return null;
+
+        }
+
+      }
+
+      return body;
+
+    }
+
+
+    function extractXAppUrl(body) {
+
+      if (!body || typeof body !== "object") {
+        return null;
+      }
+
+      return (
+        body.xAppUrl ||
+        body.data?.xAppUrl ||
+        body.data?.data?.xAppUrl ||
+        body.payload?.xAppUrl ||
+        null
+      );
+
+    }
+
+
+    xappClose.addEventListener(
+      "click",
+      hideXApp
+    );
+
+
     async function initialiseCognigyWidget() {
 
       if (!COGNIGY_ENDPOINT_CONFIG_URL) {
@@ -428,6 +599,7 @@
         );
 
         return;
+
       }
 
 
@@ -441,6 +613,7 @@
         );
 
         return;
+
       }
 
 
@@ -465,6 +638,77 @@
             );
 
 
+            /*
+              Listen for data sent from Cognigy.
+
+              Expected Flow data:
+
+              {
+                "openXApp": true,
+                "xAppUrl": "{{input.apps.url}}"
+              }
+            */
+
+            session.on(
+              "newInfo",
+              function (event) {
+
+                console.log(
+                  "Cognigy INFO event:",
+                  event
+                );
+
+
+                if (
+                  event &&
+                  event.originator &&
+                  event.originator !== "remote"
+                ) {
+                  return;
+                }
+
+
+                const body =
+                  readInfoBody(event);
+
+
+                if (!body) {
+                  return;
+                }
+
+
+                const xAppUrl =
+                  extractXAppUrl(body);
+
+
+                if (
+                  body.openXApp === true ||
+                  body.data?.openXApp === true ||
+                  xAppUrl
+                ) {
+
+                  if (xAppUrl) {
+
+                    showXApp(xAppUrl);
+
+                  }
+
+                }
+
+
+                if (
+                  body.closeXApp === true ||
+                  body.data?.closeXApp === true
+                ) {
+
+                  hideXApp();
+
+                }
+
+              }
+            );
+
+
             session.on(
               "ended",
               function () {
@@ -472,6 +716,8 @@
                 setStatus(
                   "Call ended."
                 );
+
+                hideXApp();
 
               }
             );
@@ -484,6 +730,8 @@
                 setStatus(
                   "Call ended."
                 );
+
+                hideXApp();
 
               }
             );
