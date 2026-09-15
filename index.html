@@ -383,7 +383,6 @@
           </div>
         </div>
 
-        <!-- Hidden until Cognigy sends the xApp URL -->
         <div
           id="xapp-area"
           class="xapp-area"
@@ -456,13 +455,11 @@
     Qwik Service • Approved care for a smoother journey
   </footer>
 
-  <!-- Cognigy endpoint configuration -->
   <script>
     const COGNIGY_ENDPOINT_CONFIG_URL =
       "https://endpoint-trial.cognigy.ai/ae1a1effa1cdc7f21a9eb8c5c5972abacb5e044fcf85b4abf3a4620fcb25911b";
   </script>
 
-  <!-- Cognigy Click To Call widget -->
   <script src="https://github.com/Cognigy/click-to-call-widget/releases/latest/download/webRTCWidget.js"></script>
 
   <script>
@@ -632,22 +629,16 @@
           "newRTCSession",
           function (session) {
 
+            console.log(
+              "NEW RTC SESSION:",
+              session
+            );
+
             setStatus(
               "Call connected.",
               "success"
             );
 
-
-            /*
-              Listen for data sent from Cognigy.
-
-              Expected Flow data:
-
-              {
-                "openXApp": true,
-                "xAppUrl": "{{input.apps.url}}"
-              }
-            */
 
             session.on(
               "newInfo",
@@ -711,7 +702,31 @@
 
             session.on(
               "ended",
-              function () {
+              function (event) {
+
+                console.error(
+                  "RTC SESSION ENDED",
+                  event
+                );
+
+                if (event) {
+
+                  console.error(
+                    "RTC ended originator:",
+                    event.originator
+                  );
+
+                  console.error(
+                    "RTC ended cause:",
+                    event.cause
+                  );
+
+                  console.error(
+                    "RTC ended message:",
+                    event.message
+                  );
+
+                }
 
                 setStatus(
                   "Call ended."
@@ -725,13 +740,69 @@
 
             session.on(
               "terminated",
-              function () {
+              function (event) {
+
+                console.error(
+                  "RTC SESSION TERMINATED",
+                  event
+                );
+
+                if (event) {
+
+                  console.error(
+                    "RTC terminated originator:",
+                    event.originator
+                  );
+
+                  console.error(
+                    "RTC terminated cause:",
+                    event.cause
+                  );
+
+                  console.error(
+                    "RTC terminated message:",
+                    event.message
+                  );
+
+                }
 
                 setStatus(
                   "Call ended."
                 );
 
                 hideXApp();
+
+              }
+            );
+
+
+            session.on(
+              "failed",
+              function (event) {
+
+                console.error(
+                  "RTC SESSION FAILED",
+                  event
+                );
+
+                if (event) {
+
+                  console.error(
+                    "RTC failed originator:",
+                    event.originator
+                  );
+
+                  console.error(
+                    "RTC failed cause:",
+                    event.cause
+                  );
+
+                  console.error(
+                    "RTC failed message:",
+                    event.message
+                  );
+
+                }
 
               }
             );
@@ -748,7 +819,10 @@
 
       } catch (error) {
 
-        console.error(error);
+        console.error(
+          "COGNIGY WIDGET INITIALISATION ERROR:",
+          error
+        );
 
         setStatus(
           "Unable to initialise the call service.",
