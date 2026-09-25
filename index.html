@@ -142,92 +142,155 @@
     }
 
     .call-area {
-      margin: 22px 0 8px;
-      padding: 16px 18px;
-      border: 1px solid #cfe0ff;
-      border-radius: 15px;
-      background: linear-gradient(135deg, #f7faff, var(--sky));
+      position: relative;
+      overflow: hidden;
+      margin: 26px 0 10px;
+      padding: 22px 20px 18px;
+      border: 1px solid rgba(103, 168, 255, 0.28);
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at top right, rgba(63, 149, 255, 0.26), transparent 34%),
+        radial-gradient(circle at bottom left, rgba(93, 209, 255, 0.18), transparent 30%),
+        linear-gradient(145deg, rgba(10, 25, 47, 0.96), rgba(19, 45, 78, 0.94));
+      box-shadow:
+        0 22px 50px rgba(9, 21, 40, 0.28),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .call-area::before,
+    .call-area::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      pointer-events: none;
+      filter: blur(2px);
+      opacity: 0.65;
+    }
+
+    .call-area::before {
+      top: -48px;
+      right: -36px;
+      width: 160px;
+      height: 160px;
+      background: radial-gradient(circle, rgba(82, 175, 255, 0.48), rgba(82, 175, 255, 0));
+    }
+
+    .call-area::after {
+      bottom: -54px;
+      left: -46px;
+      width: 150px;
+      height: 150px;
+      background: radial-gradient(circle, rgba(120, 225, 255, 0.22), rgba(120, 225, 255, 0));
     }
 
     .call-title {
-      margin-bottom: 4px;
-      color: var(--navy);
-      font-size: 15px;
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding: 6px 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      color: #ffffff;
+      font-size: 13px;
       font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
     }
 
     .call-help {
+      position: relative;
+      z-index: 1;
       margin: 0;
-      color: var(--muted);
+      max-width: 610px;
+      color: rgba(231, 238, 250, 0.84);
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.65;
     }
 
     .contact-grid {
+      position: relative;
+      z-index: 1;
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 14px;
+      gap: 12px;
+      margin-top: 18px;
       align-items: start;
     }
 
     .contact-field {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 7px;
       min-width: 0;
     }
 
     .contact-field label {
-      color: var(--navy);
+      color: rgba(255,255,255,0.92);
       font-size: 11px;
       font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
     }
 
     .contact-field input,
     .contact-field select {
       width: 100%;
-      min-height: 38px;
-      padding: 7px 9px;
-      border: 1px solid #b9c9df;
-      border-radius: 8px;
-      background: #ffffff;
+      min-height: 46px;
+      padding: 11px 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(246,249,255,0.92));
       color: var(--text);
       font: inherit;
-      font-size: 13px;
+      font-size: 14px;
+      font-weight: 500;
       outline: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.65);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     }
 
     .contact-field input:focus,
     .contact-field select:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(21, 94, 239, 0.12);
+      border-color: rgba(111, 194, 255, 0.95);
+      box-shadow:
+        0 0 0 4px rgba(67, 147, 255, 0.18),
+        0 10px 22px rgba(30, 78, 145, 0.15);
+      transform: translateY(-1px);
     }
 
     .contact-field input[aria-invalid="true"],
     .contact-field select[aria-invalid="true"] {
-      border-color: var(--danger);
+      border-color: #ff9c92;
+      box-shadow: 0 0 0 3px rgba(180,35,24,0.10);
     }
 
     .contact-field input:read-only,
     .contact-field select:disabled {
-      background: #f2f4f7;
+      background-color: #f2f4f7;
       color: #475467;
       cursor: not-allowed;
+      opacity: 0.86;
     }
 
     .field-error {
       min-height: 14px;
-      color: var(--danger);
+      color: #ffb8af;
       font-size: 10px;
-      line-height: 1.3;
+      line-height: 1.35;
     }
 
     .contact-note {
-      margin: 8px 0 0;
-      color: var(--muted);
+      position: relative;
+      z-index: 1;
+      margin: 10px 0 0;
+      color: rgba(226, 235, 248, 0.76);
       font-size: 11px;
-      line-height: 1.4;
+      line-height: 1.55;
     }
 
     /* When the form becomes invalid between calls, keep the already-loaded
@@ -237,19 +300,103 @@
       pointer-events: none;
     }
 
-    .status {
-      margin-top: 12px;
-      min-height: 21px;
+    .call-guidance {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 18px;
+      padding: 15px 18px;
+      border: 1px solid rgba(141, 182, 255, 0.34);
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(250,252,255,0.98), rgba(235,243,255,0.96));
+      color: #1b2a46;
+      box-shadow: 0 14px 32px rgba(5, 18, 38, 0.20);
+    }
+
+    .call-guidance-icon {
+      width: 44px;
+      height: 44px;
+      flex: 0 0 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #5c7cff, #3158e8);
+      color: #ffffff;
+      box-shadow: 0 8px 18px rgba(49, 88, 232, 0.28);
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .call-guidance-text {
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .status[hidden] {
+      display: none !important;
+    }
+
+    .status {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      min-height: 66px;
+      margin-top: 16px;
+      padding: 14px 18px 14px 62px;
+      border: 1px solid rgba(174, 207, 255, 0.72);
+      border-radius: 16px;
+      background: linear-gradient(135deg, #ffffff, #eef5ff);
+      color: #10233f;
+      box-shadow:
+        0 14px 28px rgba(4, 18, 40, 0.22),
+        inset 0 1px 0 rgba(255,255,255,0.92);
+      font-size: 14px;
+      font-weight: 750;
+      line-height: 1.45;
+      letter-spacing: -0.01em;
+    }
+
+    .status::before {
+      content: "";
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      width: 32px;
+      height: 32px;
+      transform: translateY(-50%);
+      border-radius: 50%;
+      background:
+        #155eef
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92z'/%3E%3C/svg%3E")
+        center / 17px 17px no-repeat;
+      box-shadow: 0 8px 18px rgba(21, 94, 239, 0.32);
     }
 
     .status.success {
-      color: var(--success);
+      color: #0a5135;
+      border-color: rgba(70, 191, 128, 0.55);
+      background: linear-gradient(135deg, #f2fff8, #dcfaea);
+    }
+
+    .status.success::before {
+      background-color: #0a9b60;
+      box-shadow: 0 8px 18px rgba(10, 155, 96, 0.28);
     }
 
     .status.error {
-      color: var(--danger);
+      color: #842018;
+      border-color: rgba(229, 126, 116, 0.52);
+      background: linear-gradient(135deg, #fff7f6, #ffe7e3);
+    }
+
+    .status.error::before {
+      background-color: #c83f31;
+      box-shadow: 0 8px 18px rgba(200, 63, 49, 0.24);
     }
 
     .xapp-area {
@@ -351,6 +498,78 @@
       font-size: 12px;
     }
 
+
+    .language-select-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .language-select-wrap select {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      min-height: 46px;
+      padding-left: 56px;
+      padding-right: 48px;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-color: #ffffff;
+      color: #172033;
+      text-align: left;
+      text-align-last: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background-image:
+        linear-gradient(45deg, transparent 50%, rgba(11,31,53,0.72) 50%),
+        linear-gradient(135deg, rgba(11,31,53,0.72) 50%, transparent 50%);
+      background-position:
+        calc(100% - 22px) calc(50% - 2px),
+        calc(100% - 16px) calc(50% - 2px);
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+
+    /* The flag artwork is inline SVG, not an external image or emoji.
+       This means there is nothing to load asynchronously, so the flag
+       remains visible whenever a language is selected. */
+    .language-flag-art {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      left: 14px;
+      transform: translateY(-50%);
+      width: 31px;
+      height: 21px;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(12, 33, 57, 0.14);
+      box-shadow: 0 3px 8px rgba(11,31,53,0.14);
+      background: #ffffff;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .language-flag-art svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .language-select-wrap[data-language="en-GB"] .language-flag-uk,
+    .language-select-wrap[data-language="de-DE"] .language-flag-de {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .contact-field label[for="customer-language"] {
+      white-space: nowrap;
+      font-size: 10px;
+      letter-spacing: 0.025em;
+    }
+
     @media (max-width: 760px) {
       .topbar {
         align-items: flex-start;
@@ -450,11 +669,6 @@
             Before you call
           </div>
 
-          <p class="call-help">
-            Enter your email address, mobile number and preferred language.
-            The Start a Call control will only be enabled once all three are valid.
-          </p>
-
           <div class="contact-grid">
 
             <div class="contact-field">
@@ -484,7 +698,7 @@
                 maxlength="24"
                 required
                 aria-describedby="customer-mobile-error"
-                placeholder="+44 7399 421166" />
+                placeholder="+441234567899" />
               <div
                 id="customer-mobile-error"
                 class="field-error"
@@ -494,14 +708,42 @@
 
             <div class="contact-field">
               <label for="customer-language">Preferred language</label>
-              <select
-                id="customer-language"
-                required
-                aria-describedby="customer-language-error">
-                <option value="">Choose language</option>
-                <option value="en-GB">English</option>
-                <option value="de-DE">German</option>
-              </select>
+              <div
+                id="language-select-wrap"
+                class="language-select-wrap"
+                data-language="">
+
+                <span
+                  class="language-flag-art language-flag-uk"
+                  aria-hidden="true">
+                  <svg viewBox="0 0 60 30" role="img" aria-label="United Kingdom flag">
+                    <rect width="60" height="30" fill="#012169"/>
+                    <path d="M0 0L60 30M60 0L0 30" stroke="#ffffff" stroke-width="6"/>
+                    <path d="M0 0L60 30M60 0L0 30" stroke="#C8102E" stroke-width="2"/>
+                    <path d="M30 0V30M0 15H60" stroke="#ffffff" stroke-width="10"/>
+                    <path d="M30 0V30M0 15H60" stroke="#C8102E" stroke-width="6"/>
+                  </svg>
+                </span>
+
+                <span
+                  class="language-flag-art language-flag-de"
+                  aria-hidden="true">
+                  <svg viewBox="0 0 5 3" role="img" aria-label="Germany flag">
+                    <rect width="5" height="1" y="0" fill="#000000"/>
+                    <rect width="5" height="1" y="1" fill="#DD0000"/>
+                    <rect width="5" height="1" y="2" fill="#FFCE00"/>
+                  </svg>
+                </span>
+
+                <select
+                  id="customer-language"
+                  required
+                  aria-describedby="customer-language-error">
+                  <option value="">Choose language</option>
+                  <option value="en-GB">English</option>
+                  <option value="de-DE">German</option>
+                </select>
+              </div>
               <div
                 id="customer-language-error"
                 class="field-error"
@@ -512,14 +754,22 @@
           </div>
 
           <p class="contact-note">
-            Use an international mobile format such as +44 7399 421166.
+            Enter your mobile number in international format including the country code.
             Your details stay editable between calls and are locked only while a call is active.
           </p>
+
+          <div class="call-guidance" role="note" aria-label="Call instructions">
+            <div class="call-guidance-icon" aria-hidden="true">☎</div>
+            <div class="call-guidance-text">
+              Complete all three details above. Once they are entered correctly, the green dial button will become available so you can call our friendly team.
+            </div>
+          </div>
 
           <div
             id="status"
             class="status"
-            aria-live="polite">
+            aria-live="polite"
+            hidden>
           </div>
         </div>
 
@@ -619,6 +869,9 @@
     const customerLanguageEl =
       document.getElementById("customer-language");
 
+    const languageSelectWrapEl =
+      document.getElementById("language-select-wrap");
+
     const customerEmailErrorEl =
       document.getElementById("customer-email-error");
 
@@ -643,10 +896,17 @@
 
     function setStatus(message, type = "") {
 
-      statusEl.textContent = message;
+      const hasMessage =
+        Boolean(String(message || "").trim());
+
+      statusEl.textContent =
+        hasMessage ? message : "";
 
       statusEl.className =
         "status" + (type ? " " + type : "");
+
+      statusEl.hidden =
+        !hasMessage;
 
     }
 
@@ -702,6 +962,38 @@
     }
 
 
+    function updateLanguageFlag() {
+
+      if (!languageSelectWrapEl || !customerLanguageEl) {
+        return;
+      }
+
+      const selectedLanguage =
+        customerLanguageEl.value;
+
+      languageSelectWrapEl.dataset.language =
+        selectedLanguage === "en-GB" || selectedLanguage === "de-DE"
+          ? selectedLanguage
+          : "";
+
+    }
+
+
+    function resyncLanguageFlag() {
+
+      // Browsers can restore a previous select value after the initial
+      // page load event without firing a change event. Re-sync the flag
+      // a few times so the image always matches the visible selection.
+      updateLanguageFlag();
+
+      window.setTimeout(updateLanguageFlag, 0);
+      window.setTimeout(updateLanguageFlag, 100);
+      window.setTimeout(updateLanguageFlag, 350);
+      window.setTimeout(updateLanguageFlag, 800);
+
+    }
+
+
     function setFieldValidation(
       field,
       errorElement,
@@ -744,7 +1036,7 @@
         customerMobileEl,
         customerMobileErrorEl,
         mobileValid,
-        "Use international format, for example +44 7399 421166.",
+        "Enter a valid international mobile number including the country code.",
         showErrors
       );
 
@@ -840,9 +1132,7 @@
 
         updateCallControlAvailability();
 
-        setStatus(
-          "Complete all three fields correctly to enable Start a Call."
-        );
+        setStatus("");
 
         return;
 
@@ -853,7 +1143,7 @@
       if (!cognigyWidget) {
 
         setStatus(
-          "Details accepted. Loading the call control..."
+          "Details complete — preparing the green dial button for your call..."
         );
 
         await initialiseCognigyWidget();
@@ -864,7 +1154,7 @@
 
       if (cognigyWidget) {
         setStatus(
-          "Ready. Start a Call is enabled.",
+          "Details complete — the green dial button is now available. Tap it to call our friendly team.",
           "success"
         );
       }
@@ -1116,7 +1406,7 @@
               );
 
               setStatus(
-                "Please correct all three fields before starting a call.",
+                "Please complete all three details correctly before using the green dial button to call our friendly team.",
                 "error"
               );
 
@@ -1244,7 +1534,7 @@
                 unlockContactDetails();
 
                 setStatus(
-                  "Call ended. You can update your details and call again."
+                  "Call ended. You can update your details if needed, then use the green dial button to call our friendly team again."
                 );
 
                 hideXApp();
@@ -1285,7 +1575,7 @@
                 unlockContactDetails();
 
                 setStatus(
-                  "Call ended. You can update your details and call again."
+                  "Call ended. You can update your details if needed, then use the green dial button to call our friendly team again."
                 );
 
                 hideXApp();
@@ -1326,7 +1616,7 @@
                 }
 
                 setStatus(
-                  "Call could not be completed. Check your details and try again.",
+                  "The call could not be completed. Check your details, then use the green dial button to try our friendly team again.",
                   "error"
                 );
 
@@ -1343,7 +1633,7 @@
         updateCallControlAvailability();
 
         setStatus(
-          "Ready. Start a Call is enabled.",
+          "Details complete — the green dial button is now available. Tap it to call our friendly team.",
           "success"
         );
 
@@ -1373,6 +1663,8 @@
         return;
       }
 
+      updateLanguageFlag();
+
       // Re-evaluate both validation and call-control availability whenever
       // the customer edits their details between calls.
       const formValid =
@@ -1386,9 +1678,7 @@
 
       } else {
 
-        setStatus(
-          "Complete all three fields correctly to enable Start a Call."
-        );
+        setStatus("");
 
       }
 
@@ -1401,6 +1691,7 @@
         return;
       }
 
+      updateLanguageFlag();
       validateContactForm(true);
       updateCallControlAvailability();
 
@@ -1419,6 +1710,11 @@
 
     customerLanguageEl.addEventListener(
       "change",
+      handleContactInput
+    );
+
+    customerLanguageEl.addEventListener(
+      "input",
       handleContactInput
     );
 
@@ -1441,9 +1737,27 @@
       "load",
       function () {
         document.body.classList.add("call-form-invalid");
-        setStatus(
-          "Complete all three fields correctly to enable Start a Call."
-        );
+        resyncLanguageFlag();
+        setStatus("");
+      }
+    );
+
+    window.addEventListener(
+      "pageshow",
+      resyncLanguageFlag
+    );
+
+    window.addEventListener(
+      "focus",
+      updateLanguageFlag
+    );
+
+    document.addEventListener(
+      "visibilitychange",
+      function () {
+        if (!document.hidden) {
+          resyncLanguageFlag();
+        }
       }
     );
 
