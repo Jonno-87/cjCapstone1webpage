@@ -163,6 +163,50 @@
       line-height: 1.5;
     }
 
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .contact-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .contact-field label {
+      color: var(--navy);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .contact-field input {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid #b9c9df;
+      border-radius: 9px;
+      background: #ffffff;
+      color: var(--text);
+      font: inherit;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .contact-field input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(21, 94, 239, 0.12);
+    }
+
+    .contact-note {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
     .status {
       margin-top: 12px;
       min-height: 21px;
@@ -313,6 +357,10 @@
         font-size: 15px;
       }
 
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+
       .xapp-frame {
         height: 560px;
       }
@@ -373,7 +421,36 @@
           </div>
 
           <p class="call-help">
-            Call us directly now to start your voice session.
+            Enter your contact details before starting the call.
+            For this first proof of concept, the page will pass them
+            into the active Cognigy call after the call is answered.
+          </p>
+
+          <div class="contact-grid">
+
+            <div class="contact-field">
+              <label for="customer-email">Email address</label>
+              <input
+                id="customer-email"
+                type="email"
+                autocomplete="email"
+                placeholder="customer@example.com" />
+            </div>
+
+            <div class="contact-field">
+              <label for="customer-mobile">Mobile number</label>
+              <input
+                id="customer-mobile"
+                type="tel"
+                autocomplete="tel"
+                placeholder="+44 7399 421166" />
+            </div>
+
+          </div>
+
+          <p class="contact-note">
+            POC only: use test contact details. Both fields must be
+            completed before you click Start a Call.
           </p>
 
           <div
@@ -466,6 +543,14 @@
 
     let cognigyWidget = null;
 
+    let contactInfoSent = false;
+
+    const customerEmailEl =
+      document.getElementById("customer-email");
+
+    const customerMobileEl =
+      document.getElementById("customer-mobile");
+
     const statusEl =
       document.getElementById("status");
 
@@ -485,6 +570,106 @@
 
       statusEl.className =
         "status" + (type ? " " + type : "");
+
+    }
+
+
+    function getCustomerContactPayload() {
+
+      return {
+        source: "qwikServiceWebPage",
+        event: "customerContactPoc",
+        customerEmail: customerEmailEl.value.trim(),
+        customerMobile: customerMobileEl.value.trim()
+      };
+
+    }
+
+
+    async function sendCustomerContactPoc(session) {
+
+      if (contactInfoSent) {
+        return;
+      }
+
+      const payload =
+        getCustomerContactPayload();
+
+      if (
+        !payload.customerEmail ||
+        !payload.customerMobile
+      ) {
+
+        console.warn(
+          "POC contact information was not sent because one or more fields were empty."
+        );
+
+        setStatus(
+          "Call connected, but the POC contact details were not sent because both fields were not completed before the call.",
+          "error"
+        );
+
+        return;
+
+      }
+
+      if (
+        !session ||
+        typeof session.sendInfo !== "function"
+      ) {
+
+        console.error(
+          "The active Cognigy session does not expose sendInfo()."
+        );
+
+        setStatus(
+          "Call connected, but the POC contact details could not be sent.",
+          "error"
+        );
+
+        return;
+
+      }
+
+      try {
+
+        await session.sendInfo(
+          "",
+          payload
+        );
+
+        contactInfoSent = true;
+
+        console.log(
+          "POC CONTACT DETAILS SENT TO COGNIGY:",
+          payload
+        );
+
+        setStatus(
+          "Call connected. POC contact details sent to Cognigy.",
+          "success"
+        );
+
+      } catch (error) {
+
+        console.error(
+          "POC CONTACT INFO SEND FAILED:",
+          error
+        );
+
+        setStatus(
+          "Call connected, but the POC contact details could not be sent.",
+          "error"
+        );
+
+      }
+
+    }
+
+
+    function resetContactInfoPoc() {
+
+      contactInfoSent = false;
 
     }
 
@@ -631,9 +816,29 @@
               session
             );
 
+            resetContactInfoPoc();
+
             setStatus(
-              "Call connected.",
-              "success"
+              "Call connecting..."
+            );
+
+
+            session.on(
+              "answered",
+              function () {
+
+                console.log(
+                  "RTC SESSION ANSWERED"
+                );
+
+                setStatus(
+                  "Call connected.",
+                  "success"
+                );
+
+                sendCustomerContactPoc(session);
+
+              }
             );
 
 
@@ -725,6 +930,8 @@
 
                 }
 
+                resetContactInfoPoc();
+
                 setStatus(
                   "Call ended."
                 );
@@ -763,6 +970,8 @@
 
                 }
 
+                resetContactInfoPoc();
+
                 setStatus(
                   "Call ended."
                 );
@@ -781,6 +990,8 @@
                   "RTC SESSION FAILED",
                   event
                 );
+
+                resetContactInfoPoc();
 
                 if (event) {
 
