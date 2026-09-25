@@ -88,7 +88,7 @@
     .hero {
       position: relative;
       min-height: calc(100vh - 80px);
-      padding: 46px 24px 72px;
+      padding: 46px 24px 165px;
       display: grid;
       place-items: center;
       background:
@@ -142,8 +142,8 @@
     }
 
     .call-area {
-      margin: 26px 0 8px;
-      padding: 19px 20px;
+      margin: 22px 0 8px;
+      padding: 16px 18px;
       border: 1px solid #cfe0ff;
       border-radius: 15px;
       background: linear-gradient(135deg, #f7faff, var(--sky));
@@ -165,46 +165,83 @@
 
     .contact-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 16px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+      align-items: start;
     }
 
     .contact-field {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 5px;
+      min-width: 0;
     }
 
     .contact-field label {
       color: var(--navy);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
     }
 
-    .contact-field input {
+    .contact-field input,
+    .contact-field select {
       width: 100%;
-      min-height: 44px;
-      padding: 10px 12px;
+      min-height: 38px;
+      padding: 7px 9px;
       border: 1px solid #b9c9df;
-      border-radius: 9px;
+      border-radius: 8px;
       background: #ffffff;
       color: var(--text);
       font: inherit;
-      font-size: 14px;
+      font-size: 13px;
       outline: none;
     }
 
-    .contact-field input:focus {
+    .contact-field input:focus,
+    .contact-field select:focus {
       border-color: var(--blue);
       box-shadow: 0 0 0 3px rgba(21, 94, 239, 0.12);
     }
 
+    .contact-field input[aria-invalid="true"],
+    .contact-field select[aria-invalid="true"] {
+      border-color: var(--danger);
+    }
+
+    .contact-field input:read-only,
+    .contact-field select:disabled {
+      background: #f2f4f7;
+      color: #475467;
+      cursor: not-allowed;
+    }
+
+    .field-error {
+      min-height: 14px;
+      color: var(--danger);
+      font-size: 10px;
+      line-height: 1.3;
+    }
+
     .contact-note {
-      margin: 10px 0 0;
+      margin: 8px 0 0;
       color: var(--muted);
-      font-size: 12px;
-      line-height: 1.45;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .change-details {
+      display: none;
+      margin-top: 8px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--blue);
+      font: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      text-decoration: underline;
+      cursor: pointer;
     }
 
     .status {
@@ -337,7 +374,7 @@
       }
 
       .hero {
-        padding: 28px 14px 58px;
+        padding: 28px 14px 155px;
         background-position: 56% center;
       }
 
@@ -417,13 +454,12 @@
 
         <div class="call-area">
           <div class="call-title">
-            Ready to speak with Qwik Service?
+            Before you call
           </div>
 
           <p class="call-help">
-            Enter your contact details before starting the call.
-            For this first proof of concept, the page will pass them
-            into the active Cognigy call after the call is answered.
+            Enter your email address, mobile number and preferred language.
+            The Start a Call control will only be enabled once all three are valid.
           </p>
 
           <div class="contact-grid">
@@ -434,7 +470,15 @@
                 id="customer-email"
                 type="email"
                 autocomplete="email"
-                placeholder="customer@example.com" />
+                maxlength="254"
+                required
+                aria-describedby="customer-email-error"
+                placeholder="name@example.com" />
+              <div
+                id="customer-email-error"
+                class="field-error"
+                aria-live="polite">
+              </div>
             </div>
 
             <div class="contact-field">
@@ -442,16 +486,49 @@
               <input
                 id="customer-mobile"
                 type="tel"
+                inputmode="tel"
                 autocomplete="tel"
+                maxlength="24"
+                required
+                aria-describedby="customer-mobile-error"
                 placeholder="+44 7399 421166" />
+              <div
+                id="customer-mobile-error"
+                class="field-error"
+                aria-live="polite">
+              </div>
+            </div>
+
+            <div class="contact-field">
+              <label for="customer-language">Preferred language</label>
+              <select
+                id="customer-language"
+                required
+                aria-describedby="customer-language-error">
+                <option value="">Choose language</option>
+                <option value="en-GB">English</option>
+                <option value="de-DE">German</option>
+              </select>
+              <div
+                id="customer-language-error"
+                class="field-error"
+                aria-live="polite">
+              </div>
             </div>
 
           </div>
 
           <p class="contact-note">
-            POC only: use test contact details. Both fields must be
-            completed before you click Start a Call.
+            Use an international mobile format such as +44 7399 421166.
+            Your details are locked once the call control is enabled.
           </p>
+
+          <button
+            id="change-details"
+            class="change-details"
+            type="button">
+            Change details
+          </button>
 
           <div
             id="status"
@@ -544,12 +621,29 @@
     let cognigyWidget = null;
 
     let contactInfoSent = false;
+    let widgetInitialising = false;
+    let detailsLocked = false;
 
     const customerEmailEl =
       document.getElementById("customer-email");
 
     const customerMobileEl =
       document.getElementById("customer-mobile");
+
+    const customerLanguageEl =
+      document.getElementById("customer-language");
+
+    const customerEmailErrorEl =
+      document.getElementById("customer-email-error");
+
+    const customerMobileErrorEl =
+      document.getElementById("customer-mobile-error");
+
+    const customerLanguageErrorEl =
+      document.getElementById("customer-language-error");
+
+    const changeDetailsEl =
+      document.getElementById("change-details");
 
     const statusEl =
       document.getElementById("status");
@@ -574,14 +668,175 @@
     }
 
 
+    function normaliseMobileNumber(value) {
+
+      let normalised =
+        String(value || "")
+          .trim()
+          .replace(/[\s().-]/g, "");
+
+      if (normalised.startsWith("00")) {
+        normalised = "+" + normalised.slice(2);
+      }
+
+      return normalised;
+
+    }
+
+
+    function isValidEmail(value) {
+
+      const email =
+        String(value || "").trim();
+
+      return (
+        email.length > 0 &&
+        email.length <= 254 &&
+        /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email)
+      );
+
+    }
+
+
+    function isValidMobile(value) {
+
+      const mobile =
+        normaliseMobileNumber(value);
+
+      // E.164-style international format: + followed by 8-15 digits.
+      return /^\+[1-9]\d{7,14}$/.test(mobile);
+
+    }
+
+
+    function isValidLanguage(value) {
+
+      return (
+        value === "en-GB" ||
+        value === "de-DE"
+      );
+
+    }
+
+
+    function setFieldValidation(
+      field,
+      errorElement,
+      valid,
+      message,
+      showError
+    ) {
+
+      field.setAttribute(
+        "aria-invalid",
+        showError && !valid ? "true" : "false"
+      );
+
+      errorElement.textContent =
+        showError && !valid ? message : "";
+
+    }
+
+
+    function validateContactForm(showErrors = false) {
+
+      const emailValid =
+        isValidEmail(customerEmailEl.value);
+
+      const mobileValid =
+        isValidMobile(customerMobileEl.value);
+
+      const languageValid =
+        isValidLanguage(customerLanguageEl.value);
+
+      setFieldValidation(
+        customerEmailEl,
+        customerEmailErrorEl,
+        emailValid,
+        "Enter a valid email address.",
+        showErrors
+      );
+
+      setFieldValidation(
+        customerMobileEl,
+        customerMobileErrorEl,
+        mobileValid,
+        "Use international format, for example +44 7399 421166.",
+        showErrors
+      );
+
+      setFieldValidation(
+        customerLanguageEl,
+        customerLanguageErrorEl,
+        languageValid,
+        "Choose English or German.",
+        showErrors
+      );
+
+      return (
+        emailValid &&
+        mobileValid &&
+        languageValid
+      );
+
+    }
+
+
     function getCustomerContactPayload() {
 
       return {
         source: "qwikServiceWebPage",
         event: "customerContactPoc",
-        customerEmail: customerEmailEl.value.trim(),
-        customerMobile: customerMobileEl.value.trim()
+        customer_email: customerEmailEl.value.trim(),
+        customer_mobile: normaliseMobileNumber(
+          customerMobileEl.value
+        ),
+        requested_language: customerLanguageEl.value
       };
+
+    }
+
+
+    function lockContactDetails() {
+
+      detailsLocked = true;
+
+      customerEmailEl.readOnly = true;
+      customerMobileEl.readOnly = true;
+      customerLanguageEl.disabled = true;
+
+      changeDetailsEl.style.display = "inline-block";
+
+    }
+
+
+    async function tryEnableCallWidget() {
+
+      if (
+        detailsLocked ||
+        cognigyWidget ||
+        widgetInitialising
+      ) {
+        return;
+      }
+
+      if (!validateContactForm(false)) {
+
+        setStatus(
+          "Complete all three fields correctly to enable Start a Call."
+        );
+
+        return;
+
+      }
+
+      lockContactDetails();
+
+      setStatus(
+        "Details accepted. Loading the call control..."
+      );
+
+      await initialiseCognigyWidget();
 
     }
 
@@ -592,26 +847,23 @@
         return;
       }
 
-      const payload =
-        getCustomerContactPayload();
+      if (!validateContactForm(false)) {
 
-      if (
-        !payload.customerEmail ||
-        !payload.customerMobile
-      ) {
-
-        console.warn(
-          "POC contact information was not sent because one or more fields were empty."
+        console.error(
+          "Contact information failed validation before SIP INFO send."
         );
 
         setStatus(
-          "Call connected, but the POC contact details were not sent because both fields were not completed before the call.",
+          "The saved contact details are invalid. Please reload and try again.",
           "error"
         );
 
         return;
 
       }
+
+      const payload =
+        getCustomerContactPayload();
 
       if (
         !session ||
@@ -623,7 +875,7 @@
         );
 
         setStatus(
-          "Call connected, but the POC contact details could not be sent.",
+          "Call connected, but the contact details could not be sent.",
           "error"
         );
 
@@ -641,24 +893,24 @@
         contactInfoSent = true;
 
         console.log(
-          "POC CONTACT DETAILS SENT TO COGNIGY:",
+          "CONTACT DETAILS AND LANGUAGE SENT TO COGNIGY:",
           payload
         );
 
         setStatus(
-          "Call connected. POC contact details sent to Cognigy.",
+          "Call connected. Contact details and language sent to Cognigy.",
           "success"
         );
 
       } catch (error) {
 
         console.error(
-          "POC CONTACT INFO SEND FAILED:",
+          "CONTACT INFO SEND FAILED:",
           error
         );
 
         setStatus(
-          "Call connected, but the POC contact details could not be sent.",
+          "Call connected, but the contact details could not be sent.",
           "error"
         );
 
@@ -773,6 +1025,12 @@
 
     async function initialiseCognigyWidget() {
 
+      if (cognigyWidget || widgetInitialising) {
+        return;
+      }
+
+      widgetInitialising = true;
+
       if (!COGNIGY_ENDPOINT_CONFIG_URL) {
 
         setStatus(
@@ -780,6 +1038,7 @@
           "error"
         );
 
+        widgetInitialising = false;
         return;
 
       }
@@ -794,6 +1053,7 @@
           "error"
         );
 
+        widgetInitialising = false;
         return;
 
       }
@@ -1019,13 +1279,17 @@
         );
 
 
+        widgetInitialising = false;
+
         setStatus(
-          "Ready. Call us directly now to speak with our friendly team.",
+          "Ready. Start a Call is now enabled.",
           "success"
         );
 
 
       } catch (error) {
+
+        widgetInitialising = false;
 
         console.error(
           "COGNIGY WIDGET INITIALISATION ERROR:",
@@ -1042,9 +1306,76 @@
     }
 
 
+    function handleContactInput() {
+
+      if (detailsLocked) {
+        return;
+      }
+
+      // Clear errors as soon as the form becomes valid and enable
+      // the Cognigy call control only after all three values are valid.
+      validateContactForm(false);
+      tryEnableCallWidget();
+
+    }
+
+
+    function handleContactBlur() {
+
+      if (detailsLocked) {
+        return;
+      }
+
+      validateContactForm(true);
+
+    }
+
+
+    customerEmailEl.addEventListener(
+      "input",
+      handleContactInput
+    );
+
+    customerMobileEl.addEventListener(
+      "input",
+      handleContactInput
+    );
+
+    customerLanguageEl.addEventListener(
+      "change",
+      handleContactInput
+    );
+
+    customerEmailEl.addEventListener(
+      "blur",
+      handleContactBlur
+    );
+
+    customerMobileEl.addEventListener(
+      "blur",
+      handleContactBlur
+    );
+
+    customerLanguageEl.addEventListener(
+      "blur",
+      handleContactBlur
+    );
+
+    changeDetailsEl.addEventListener(
+      "click",
+      function () {
+        window.location.reload();
+      }
+    );
+
+
     window.addEventListener(
       "load",
-      initialiseCognigyWidget
+      function () {
+        setStatus(
+          "Complete all three fields correctly to enable Start a Call."
+        );
+      }
     );
 
   </script>
