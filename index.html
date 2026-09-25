@@ -230,18 +230,11 @@
       line-height: 1.4;
     }
 
-    .change-details {
-      display: none;
-      margin-top: 8px;
-      padding: 0;
-      border: 0;
-      background: transparent;
-      color: var(--blue);
-      font: inherit;
-      font-size: 11px;
-      font-weight: 700;
-      text-decoration: underline;
-      cursor: pointer;
+    /* When the form becomes invalid between calls, keep the already-loaded
+       Cognigy widget visible but prevent the Start a Call control being used. */
+    body.call-form-invalid .webrtc_widget_outer_wrapper {
+      opacity: 0.45;
+      pointer-events: none;
     }
 
     .status {
@@ -520,15 +513,8 @@
 
           <p class="contact-note">
             Use an international mobile format such as +44 7399 421166.
-            Your details are locked once the call control is enabled.
+            Your details stay editable between calls and are locked only while a call is active.
           </p>
-
-          <button
-            id="change-details"
-            class="change-details"
-            type="button">
-            Change details
-          </button>
 
           <div
             id="status"
@@ -641,9 +627,6 @@
 
     const customerLanguageErrorEl =
       document.getElementById("customer-language-error");
-
-    const changeDetailsEl =
-      document.getElementById("change-details");
 
     const statusEl =
       document.getElementById("status");
@@ -805,7 +788,41 @@
       customerMobileEl.readOnly = true;
       customerLanguageEl.disabled = true;
 
-      changeDetailsEl.style.display = "inline-block";
+      // Keep the live call controls usable while the call is active.
+      document.body.classList.remove("call-form-invalid");
+
+    }
+
+
+    function unlockContactDetails() {
+
+      detailsLocked = false;
+
+      customerEmailEl.readOnly = false;
+      customerMobileEl.readOnly = false;
+      customerLanguageEl.disabled = false;
+
+      updateCallControlAvailability();
+
+    }
+
+
+    function updateCallControlAvailability() {
+
+      // While a call is active, the widget must remain interactive so the
+      // customer can mute or end the call.
+      if (detailsLocked) {
+        document.body.classList.remove("call-form-invalid");
+        return;
+      }
+
+      const formValid =
+        validateContactForm(false);
+
+      document.body.classList.toggle(
+        "call-form-invalid",
+        !formValid
+      );
 
     }
 
@@ -814,13 +831,14 @@
 
       if (
         detailsLocked ||
-        cognigyWidget ||
         widgetInitialising
       ) {
         return;
       }
 
       if (!validateContactForm(false)) {
+
+        updateCallControlAvailability();
 
         setStatus(
           "Complete all three fields correctly to enable Start a Call."
@@ -830,13 +848,26 @@
 
       }
 
-      lockContactDetails();
+      // Initialise the Cognigy widget once. The fields remain editable until
+      // the customer actually starts a call.
+      if (!cognigyWidget) {
 
-      setStatus(
-        "Details accepted. Loading the call control..."
-      );
+        setStatus(
+          "Details accepted. Loading the call control..."
+        );
 
-      await initialiseCognigyWidget();
+        await initialiseCognigyWidget();
+
+      }
+
+      updateCallControlAvailability();
+
+      if (cognigyWidget) {
+        setStatus(
+          "Ready. Start a Call is enabled.",
+          "success"
+        );
+      }
 
     }
 
@@ -1076,7 +1107,26 @@
               session
             );
 
+            // This should already be guaranteed by the disabled call control,
+            // but re-check immediately before the call starts.
+            if (!validateContactForm(true)) {
+
+              console.error(
+                "CALL START BLOCKED: contact details are invalid."
+              );
+
+              setStatus(
+                "Please correct all three fields before starting a call.",
+                "error"
+              );
+
+              updateCallControlAvailability();
+              return;
+
+            }
+
             resetContactInfoPoc();
+            lockContactDetails();
 
             setStatus(
               "Call connecting..."
@@ -1191,9 +1241,10 @@
                 }
 
                 resetContactInfoPoc();
+                unlockContactDetails();
 
                 setStatus(
-                  "Call ended."
+                  "Call ended. You can update your details and call again."
                 );
 
                 hideXApp();
@@ -1231,9 +1282,10 @@
                 }
 
                 resetContactInfoPoc();
+                unlockContactDetails();
 
                 setStatus(
-                  "Call ended."
+                  "Call ended. You can update your details and call again."
                 );
 
                 hideXApp();
@@ -1252,6 +1304,7 @@
                 );
 
                 resetContactInfoPoc();
+                unlockContactDetails();
 
                 if (event) {
 
@@ -1272,6 +1325,13 @@
 
                 }
 
+                setStatus(
+                  "Call could not be completed. Check your details and try again.",
+                  "error"
+                );
+
+                hideXApp();
+
               }
             );
 
@@ -1280,9 +1340,10 @@
 
 
         widgetInitialising = false;
+        updateCallControlAvailability();
 
         setStatus(
-          "Ready. Start a Call is now enabled.",
+          "Ready. Start a Call is enabled.",
           "success"
         );
 
@@ -1312,10 +1373,24 @@
         return;
       }
 
-      // Clear errors as soon as the form becomes valid and enable
-      // the Cognigy call control only after all three values are valid.
-      validateContactForm(false);
-      tryEnableCallWidget();
+      // Re-evaluate both validation and call-control availability whenever
+      // the customer edits their details between calls.
+      const formValid =
+        validateContactForm(false);
+
+      updateCallControlAvailability();
+
+      if (formValid) {
+
+        tryEnableCallWidget();
+
+      } else {
+
+        setStatus(
+          "Complete all three fields correctly to enable Start a Call."
+        );
+
+      }
 
     }
 
@@ -1327,6 +1402,7 @@
       }
 
       validateContactForm(true);
+      updateCallControlAvailability();
 
     }
 
@@ -1361,17 +1437,10 @@
       handleContactBlur
     );
 
-    changeDetailsEl.addEventListener(
-      "click",
-      function () {
-        window.location.reload();
-      }
-    );
-
-
     window.addEventListener(
       "load",
       function () {
+        document.body.classList.add("call-form-invalid");
         setStatus(
           "Complete all three fields correctly to enable Start a Call."
         );
